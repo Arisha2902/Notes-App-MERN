@@ -29,36 +29,60 @@ export async function create(req,res){
 
         const savedNote = await note.save()
         res.status(201).json(savedNote);
-    }catch(error){}
+    }catch(error){
        res.status(200).send("internal server error2");
-
+    }
 }
 
 export async function update(req,res){
-    try{
-        const {title,content} = req.body;
-        const updatedNote = await Note.findByIdAndUpdate(
-            req.params.id,
-            {title,content},
-        {
-            new: true,
-        })
-        if(!updatedNote) return res.status(404).json({message:"note not found"})
-        res.status(200).json(updatedNote)
-    }catch(error){
-       res.status(200).send(error);
+   
+    try {
+    console.log('Update ID:', req.params.id);
+    console.log('Update Body:', req.body);
 
+    const updatedNote = await Note.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedNote) {
+      return res.status(404).json({ message: "Note not found" });
     }
+
+    return res.status(200).json(updatedNote);
+  } catch (error) {
+    console.error('Update error:', error);
+    return res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+
 }
 
 export async function deleted(req, res){
-    try{
-        const deletedNote = await Note.findByIdAndDelete(req.params.id)
-        if(!deletedNote) return res.status(404).json({message:"note not deleted"})
-        res.status(200).json("note deleted")
-    }catch(error){
-       res.status(200).send(error);
-    }
+    // try{
+    //     const deletedNote = await Note.findByIdAndDelete(req.params.id)
+    //     if(!deletedNote) return res.status(404).json({message:"note not deleted"})
+    //     res.status(200).json("note deleted")
+    // }catch(error){
+    //    res.status(200).send(error);
+    // }
     
-    res.status(200).json({ message :" notes delete"});
+    // res.status(200).json({ message :" notes delete"});
+
+
+
+
+
+    try {
+    const deletedNote = await Note.findByIdAndDelete(req.params.id);
+
+    if (!deletedNote) {
+      return res.status(404).json({ message: "Note not deleted" });
+    }
+
+    return res.status(200).json({ message: "Note deleted" });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+
 }

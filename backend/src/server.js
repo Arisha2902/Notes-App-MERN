@@ -17,6 +17,9 @@ const __dirname = path.resolve()
 
 // connectDB();
 
+app.use(express.json())
+
+
 // middleware
 if(process.env.NODE_ENV !== "production"){
 
@@ -26,7 +29,7 @@ app.use(
         origin: "http://localhost:5173",
     })
 )
-app.use(express.json())
+// app.use(express.json())
 app.use(rateLimiter)
 
 }
@@ -37,9 +40,11 @@ app.use(rateLimiter)
 //     next();
 // })
 
+app.use("/api/notes", notesRoutes);
+
 if(process.env.NODE_ENV === "production"){
     
-app.use("/api/notes", notesRoutes);
+// app.use("/api/notes", notesRoutes);
 
 
 app.use(express.static(path.join(__dirname, "../frontend/dist")))
